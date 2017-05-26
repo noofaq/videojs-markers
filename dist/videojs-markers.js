@@ -96,7 +96,9 @@
     }
 
     function createMarkerDiv(marker) {
-      var markerDiv = videojs.createEl('div', {
+      // PN: VideoJS6 compatibility
+      //var markerDiv = videojs.createEl('div', {
+      var markerDiv = videojs.dom.createEl('div', {
         className: 'vjs-marker ' + (marker.class || "")
       }, {
         'data-marker-key': marker.key,
@@ -209,7 +211,9 @@
     }
 
     function initializeMarkerTip() {
-      markerTip = videojs.createEl('div', {
+      // PN: VideoJS6 compatibility
+      //markerTip = videojs.createEl('div', {
+      markerTip = videojs.dom.createEl('div', {
         className: 'vjs-tip',
         innerHTML: "<div class='vjs-tip-arrow'></div><div class='vjs-tip-inner'></div>"
       });
@@ -226,7 +230,15 @@
       var marker = markersList[currentMarkerIndex];
       var markerTime = setting.markerTip.time(marker);
 
-      if (currentTime >= markerTime && currentTime <= markerTime + setting.breakOverlay.displayTime) {
+      //PN: no overlayText = do not display overlay
+      if (typeof marker.overlayText === 'undefined' ) { return false; }
+
+      //PN: support duration too
+      var markerOverlayDuration = Math.max(setting.breakOverlay.displayTime,
+                                            typeof marker.duration !== 'undefined' ? marker.duration : 0
+                                  );
+
+      if (currentTime >= markerTime && currentTime <= markerTime + markerOverlayDuration) {
         if (overlayIndex !== currentMarkerIndex) {
           overlayIndex = currentMarkerIndex;
           if (breakOverlay) {
@@ -247,7 +259,9 @@
 
     // problem when the next marker is within the overlay display time from the previous marker
     function initializeOverlay() {
-      breakOverlay = videojs.createEl('div', {
+      // PN: VideoJS6 compatibility
+      //breakOverlay = videojs.createEl('div', {
+      breakOverlay = videojs.dom.createEl('div', {
         className: 'vjs-break-overlay',
         innerHTML: "<div class='vjs-break-overlay-text'></div>"
       });
@@ -407,6 +421,8 @@
     };
   }
 
-  videojs.plugin('markers', registerVideoJsMarkersPlugin);
+// PN: VideoJS6 compatibility
+//  videojs.plugin('markers', registerVideoJsMarkersPlugin);
+  videojs.registerPlugin('markers', registerVideoJsMarkersPlugin);
 })(window.videojs);
 //# sourceMappingURL=videojs-markers.js.map
